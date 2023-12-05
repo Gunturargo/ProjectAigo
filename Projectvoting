@@ -1,0 +1,216 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_CANDIDATES 100
+typedef struct {
+    char name[50];
+    int code;
+    char address [100];
+} Candidate;
+
+typedef struct {
+    char name[50];
+    int  code;
+    char address[100];
+    char date[20];
+} Voter;
+
+Candidate candidates[MAX_CANDIDATES];
+int numCandidates = 0;
+Voter voters[MAX_CANDIDATES];
+int numVoters = 0;
+
+void saveData() {
+    FILE *file = fopen("voting_data.txt", "w");
+    if (file == NULL) {
+        printf("Failed to open file for writing.\n");
+        return;
+    }
+
+    fprintf(file, "%d\n", numCandidates);
+    for (int i = 0; i < numCandidates; i++) {
+        fprintf(file, "%s %d %s\n", candidates[i].name, candidates[i].code, candidates[i].address);
+    }
+
+    fprintf(file, "%d\n", numVoters);
+    for (int i = 0; i < numVoters; i++) {
+        fprintf(file, "%s %d %s %s\n", voters[i].name, voters[i].code, voters[i].address, voters[i].date);
+    }
+
+    fclose(file);
+    printf("Data Sukses Disimpan.\n");
+}
+
+void loadData() {
+    FILE *file = fopen("voting_data.txt", "r");
+    if (file == NULL) {
+        printf("Tidak Ditemukan Data.\n");
+        return;
+    }
+
+    fscanf(file, "%d", &numCandidates);
+    for (int i = 0; i < numCandidates; i++) {
+        fscanf(file, "%s %d %s", candidates[i].name, &candidates[i].code, candidates[i].address);
+    }
+
+    fscanf(file, "%d", &numVoters);
+    for (int i = 0; i < numVoters; i++) {
+        fscanf(file, "%s %d %s %s", voters[i].name, &voters[i].code, voters[i].address, voters[i].date);
+    }
+
+    fclose(file);
+    printf("Data Dimuat Ulang Berhasil.\n");
+}
+
+void addCandidate() {
+    if (numCandidates >= MAX_CANDIDATES) {
+        printf("Maximum number of candidates reached.\n");
+        return;
+    }
+
+    Candidate candidate;
+    printf("Masukkan nama Kandidat: ");
+    scanf("%s", candidate.name);
+    printf("Masukkan Kode Kandidat: ");
+    scanf("%d", &candidate.code);
+    printf("Masukkan Alamat Kandidat: ");
+    scanf("%s", candidate.address);
+
+    candidates[numCandidates++] = candidate;
+    printf("Kandidat Berhasil Ditambahkan\n");
+}
+
+void searchCandidate() {
+    int code;
+    printf("Masukkan Kode Kandidat: ");
+    scanf("%d", &code);
+
+    for (int i = 0; i < numCandidates; i++) {
+        if (candidates[i].code == code) {
+            printf("Kandidat Ditemukan :\n");
+            printf("Nama: %s\n", candidates[i].name);
+            printf("Kode Kandidat: %d\n", candidates[i].code);
+            printf("Alamat Kandidat: %s\n", candidates[i].address);
+            return ;
+        }
+    }
+    printf("Kandidat Tidak Ditemukan.\n");
+
+        }
+
+
+void updateCandidate() {
+    int code;
+    printf("Masukkan Kode Kandidat Untuk DiUpdate: ");
+    scanf("%d", &code);
+
+    for (int i = 0; i < numCandidates; i++) {
+        if (candidates[i].code == code) {
+            printf("Masukkan Nama Kandidat Baru: ");
+            scanf("%s", candidates[i].name);
+            printf("Masukkan Alamat Kandidat Baru: ");
+            scanf("%s", candidates[i].address);
+            printf("Kandidat Berhasil Diupdate.\n");
+            return;
+        }
+    }
+
+    printf("Kandidat Tidak Ditemukan.\n");
+}
+
+void deleteCandidate() {
+    int code;
+    printf("Masukkan Kode Kandidat Untuk Dihapus: ");
+    scanf("%d", &code);
+
+    for (int i = 0; i < numCandidates; i++) {
+        if (candidates[i].code == code) {
+            for (int j = i; j < numCandidates - 1; j++) {
+                candidates[j] = candidates[j + 1];
+            }
+            numCandidates--;
+            printf("Kandidat Berhasil Dihapus.\n");
+            return;
+        }
+    }
+
+    printf("Kandidat Tidak ditemukan.\n");
+}
+
+void vote() {
+    if (numCandidates = 0) {
+        printf("Tidak Ada Kandidat yang bisa Dipilih.\n");
+        return;
+    }
+
+    Voter voter;
+    printf("Masukkan Nama Pemilih: ");
+    scanf("%s", voter.name);
+    printf("Masukkan Kode Kandidat Yang akan Dipilih: ");
+    scanf("%d", &voter.code);
+    printf("Masukkan alamat Pemilih: ");
+    scanf("%s", voter.address);
+    printf("Masukkan Tanggal Pemilihan: ");
+    scanf("%s", voter.date);
+
+    voters[numVoters++] = voter;
+    printf("Pemilihan Berhasil Dilakukan\n");
+}
+
+void showSummary() {
+    printf("Jumlah Pemilih : %d\n", numVoters);
+    printf("Jumlah Kandidat: %d\n", numCandidates);
+}
+
+int main() {
+    int choice;
+
+    loadData();
+
+    do {
+        printf("\nVoting System Menu:\n");
+        printf("1. Add Kandidat\n");
+        printf("2. Search Kandidat\n");
+        printf("3. Update Kandidat\n");
+        printf("4. Delete Kandidat\n");
+        printf("5. Vote\n");
+        printf("6. Show Summary\n");
+        printf("7. Save Data\n");
+        printf("8. Exit\n");
+        printf("Masukkan Nomor Menu Yang Akan Dipilih: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addCandidate();
+                break;
+            case 2:
+                searchCandidate();
+                break;
+            case 3:
+                updateCandidate();
+                break;
+            case 4:
+                deleteCandidate();
+                break;
+            case 5:
+                vote();
+                break;
+            case 6:
+                showSummary();
+                break;
+            case 7:
+                saveData();
+                break;
+            case 8:
+                printf("Keluarr......\n");
+                break;
+            default:
+                printf("Pilihan GAGAL. Coba Lagi\n");
+        }
+    } while (choice != 8);
+
+    return 0;
+}
